@@ -1,0 +1,7 @@
+<resources>
+    <string-array name="sections">
+        <item >Sarajevo</item>
+        <item >Zenica</item>
+        <item >Mostar</item>
+    </string-array>
+</resources>

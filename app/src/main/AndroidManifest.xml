@@ -10,6 +10,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AirQuality">
         <activity
+            android:name=".ListItemDetail"
+            android:exported="false"
+            android:label="@string/title_activity_list_item_detail"
+            android:theme="@style/Theme.AirQuality.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
