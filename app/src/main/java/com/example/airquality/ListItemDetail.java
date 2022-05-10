@@ -144,14 +144,12 @@ public class ListItemDetail extends MainActivity {
             inner_rect = new RectF(center.x-inner_radius, center.y-inner_radius, center.x+inner_radius, center.y+inner_radius);
             path = new Path();
             fill = new Paint();
-            fill.setColor(Color.GREEN);
+            fill.setColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
             border = new Paint();
         }
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-
-
             path.arcTo(outer_rect, arc_ofset, arc_sweep);
             path.arcTo(inner_rect, arc_ofset + arc_sweep, -arc_sweep);
             path.close();
