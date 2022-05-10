@@ -1,14 +1,11 @@
 package com.example.airquality;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -38,13 +35,10 @@ public class ListItemDetail extends MainActivity {
         TextView myTextView = (TextView) findViewById(R.id.my_textview);
         myTextView.setText(myKeys[position]);
         //txtJson = (TextView) findViewById(R.id.tvJsonItem);
+        progressBar = (ProgressBar) findViewById(R.id.progressbar);
         new JsonTask().execute("https://api.waqi.info/feed/shanghai/?token=demo");
 
-        /*RelativeLayout layout = (RelativeLayout) findViewById(android.R.id.content).getRootView();
-        progressBar = new ProgressBar(ListItemDetail.this, null, android.R.attr.progressBarStyleLarge);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100, 100);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
-        layout.addView(progressBar, params);*/
+
     }
     private class JsonTask extends AsyncTask<String, String, String> {
 
@@ -103,7 +97,7 @@ public class ListItemDetail extends MainActivity {
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            //progressBar.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
             Log.d("Test",result);
             //txtJson.setText(result);
         }
