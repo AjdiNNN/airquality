@@ -1,13 +1,7 @@
 package com.example.airquality;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.RectF;
+
 import android.os.Bundle;
 
 import android.util.DisplayMetrics;
@@ -15,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,8 +43,8 @@ public class ListItemDetail extends MainActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         height = displayMetrics.heightPixels;
         width = displayMetrics.widthPixels;
-
     }
+
 
     private class JsonTask extends AsyncTask<String, String, String> {
 
@@ -94,9 +89,7 @@ public class ListItemDetail extends MainActivity {
                     connection.disconnect();
                 }
                 try {
-                    if (reader != null) {
-                        reader.close();
-                    }
+                    if (reader != null) reader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -112,54 +105,14 @@ public class ListItemDetail extends MainActivity {
                 JSONObject jsonObject = new JSONObject(result);
                 JSONObject getSth = jsonObject.getJSONObject("data");
                 aqi = getSth.getInt("aqi");
-                setContentView(new AQIView(ListItemDetail.this));
+                // globally
+                TextView aqivalue = (TextView)findViewById(R.id.text_view_id);
+                aqivalue.setText(aqi.toString());
+                AQIView myView = (AQIView) findViewById(R.id.aqiDraw);
+                myView.setAqi(aqi);
             }catch (JSONException err){
                 Log.d("Error", err.toString());
             }
         }
-    }
-    class AQIView extends View
-    {
-        Point center;
-        RectF outer_rect;
-        RectF inner_rect;
-        Path path;
-        Paint fill;
-        Paint border;
-        int inner_radius = 100;
-        int outer_radius = 150;
-        int arc_sweep = -180;
-        int arc_ofset;
-        int centerW = width/2;
-        int centerH = height/4;
-        public AQIView(Context context) {
-            super(context);
-            this.init();
-        }
-        private void init()
-        {
-            arc_ofset = aqi%360;
-            center = new Point(centerW,centerH);
-            outer_rect = new RectF(center.x-outer_radius, center.y-outer_radius, center.x+outer_radius, center.y+outer_radius);
-            inner_rect = new RectF(center.x-inner_radius, center.y-inner_radius, center.x+inner_radius, center.y+inner_radius);
-            path = new Path();
-            fill = new Paint();
-            fill.setColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
-            border = new Paint();
-        }
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            path.arcTo(outer_rect, arc_ofset, arc_sweep);
-            path.arcTo(inner_rect, arc_ofset + arc_sweep, -arc_sweep);
-            path.close();
-
-            canvas.drawPath(path, fill);
-
-            border.setStyle(Paint.Style.STROKE);
-            border.setStrokeWidth(2);
-            canvas.drawPath(path, border);
-        }
-
     }
 }

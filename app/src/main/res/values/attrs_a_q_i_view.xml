@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="AQIView">
+        <attr name="aqi" format="integer"/>
+    </declare-styleable>
+</resources>
