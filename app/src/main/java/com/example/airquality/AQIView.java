@@ -17,7 +17,6 @@ import android.view.View;
  */
 public class AQIView extends View
 {
-    private boolean loaded;
     private int aqi;
     Point center;
     RectF outer_rect;
@@ -43,7 +42,6 @@ public class AQIView extends View
         super.onSizeChanged(w, h, oldw, oldh);
     }
     private void init(AttributeSet attrs, int defStyle) {
-        setBackgroundColor(Color.LTGRAY);
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.AQIView, defStyle, 0);
 
@@ -64,14 +62,11 @@ public class AQIView extends View
         super.invalidate();
         fill.setColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
         arc_sweep = aqi > 300 ? 300 : aqi;
-        loaded = true;
     }
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         transparentFill.setAlpha(75);
-        
-        if(!loaded) return;
         transparentPath.arcTo(outer_rect, arc_ofset, 300);
         transparentPath.arcTo(inner_rect, arc_ofset + 300, -300);
         transparentPath.close();

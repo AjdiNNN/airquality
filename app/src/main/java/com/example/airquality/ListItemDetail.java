@@ -2,10 +2,12 @@ package com.example.airquality;
 
 import android.content.Intent;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -35,7 +37,8 @@ public class ListItemDetail extends MainActivity {
 
         // Here we turn your string.xml in an array
         String[] myKeys = getResources().getStringArray(R.array.sections);
-
+        FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
+        central.setVisibility(View.INVISIBLE);
         //txtJson = (TextView) findViewById(R.id.tvJsonItem);
         progressBar = findViewById(R.id.progressbar);
         new JsonTask().execute("https://api.waqi.info/feed/"+myKeys[position]+"/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa");
@@ -106,8 +109,11 @@ public class ListItemDetail extends MainActivity {
                 JSONObject getSth = jsonObject.getJSONObject("data");
                 aqi = getSth.getInt("aqi");
                 // globally
+                FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
+                central.setVisibility(View.VISIBLE);
                 TextView aqivalue = (TextView)findViewById(R.id.text_view_id);
                 aqivalue.setText(aqi.toString());
+                aqivalue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
                 AQIView myView = (AQIView) findViewById(R.id.aqiDraw);
                 myView.setAqi(aqi);
             }catch (JSONException err){
