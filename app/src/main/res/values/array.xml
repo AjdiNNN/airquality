@@ -2,6 +2,11 @@
     <string-array name="sections">
         <item >Sarajevo</item>
         <item >Zenica</item>
-        <item >Mostar</item>
+        <!--<item >Visoko</item>-->
     </string-array>
+    <integer-array name="cityimages">
+        <item>@drawable/sarajevo</item>
+        <item>@drawable/zenica</item>
+        <item>@drawable/visoko</item>
+    </integer-array>
 </resources>

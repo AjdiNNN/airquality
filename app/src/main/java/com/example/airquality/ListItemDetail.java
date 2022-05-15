@@ -2,12 +2,15 @@ package com.example.airquality;
 
 import android.content.Intent;
 
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -30,6 +33,7 @@ public class ListItemDetail extends MainActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_listitem);
 
         Intent intent = getIntent();
@@ -40,11 +44,14 @@ public class ListItemDetail extends MainActivity {
         FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
         central.setVisibility(View.INVISIBLE);
         progressBar = findViewById(R.id.progressbar);
-        new JsonTask().execute("https://api.waqi.info/feed/"+ myKeys[position]+"/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa");
+        new JsonTask().execute("https://api.waqi.info/feed/"+myKeys[position]+"/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa&keyword=");
         TextView cityName = (TextView)findViewById(R.id.textView2);
         cityName.setText(myKeys[position]);
+        TypedArray imgs = getResources().obtainTypedArray(R.array.cityimages);
+        ImageView CityImage = (ImageView)findViewById(R.id.imageView2);
+        CityImage.setBackgroundResource(imgs.getResourceId(position, 0));
+        imgs.recycle();
     }
-
 
     private class JsonTask extends AsyncTask<String, String, String> {
 
@@ -102,13 +109,16 @@ public class ListItemDetail extends MainActivity {
             super.onPostExecute(result);
             progressBar.setVisibility(View.GONE);
             try {
+                /*result = result.replace("[{","{");
+                result = result.replace("]}","}");
+                Log.d("test",result);*/
                 JSONObject jsonObject = new JSONObject(result);
                 JSONObject getSth = jsonObject.getJSONObject("data");
                 aqi = getSth.getInt("aqi");
                 // globally
                 FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
                 central.setVisibility(View.VISIBLE);
- 
+
                 TextView aqivalue = (TextView)findViewById(R.id.text_view_id);
                 aqivalue.setText(aqi.toString());
                 aqivalue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));

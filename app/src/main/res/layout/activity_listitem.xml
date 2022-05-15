@@ -2,8 +2,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/aqiText"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical"
     android:textAlignment="center">
 
@@ -20,13 +20,21 @@
     <FrameLayout
         android:id="@+id/aqiLayout"
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="200dp"
+        android:background="#FFFFFF">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@drawable/sarajevo"
+            android:src="@drawable/gradient"
+            android:contentDescription="City Image"/>
 
         <com.example.airquality.AQIView
             android:id="@+id/aqiDraw"
-            android:layout_width="fill_parent"
-            android:layout_height="200dp"
-            android:background="#D5D5D5"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:aqi="0" />
 
         <TextView
@@ -42,26 +50,27 @@
             tools:ignore="TextContrastCheck" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/textView2"
+            android:layout_width="109dp"
             android:layout_height="fill_parent"
-            android:fontFamily="sans-serif-light"
-            android:gravity="bottom|center_horizontal"
-            android:paddingBottom="8dp"
-            android:text="@string/airQualityIndex"
-            android:textColor="#880E4F"
+            android:fontFamily="sans-serif-smallcaps"
+            android:gravity="center"
+            android:text="@string/city"
+            android:textColor="#00FF73"
             android:textSize="16sp"
             tools:ignore="TextContrastCheck" />
 
         <TextView
-            android:id="@+id/textView2"
-            android:layout_width="109dp"
+            android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:fontFamily="sans-serif-light"
-            android:gravity="center"
-            android:text="@string/city"
-            android:textColor="#880E4F"
+            android:fontFamily="sans-serif-smallcaps"
+            android:gravity="bottom|center_horizontal"
+            android:paddingBottom="8dp"
+            android:text="@string/airQualityIndex"
+            android:textColor="#00FF73"
             android:textSize="16sp"
             tools:ignore="TextContrastCheck" />
+
     </FrameLayout>
 
 </LinearLayout>
