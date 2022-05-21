@@ -44,48 +44,53 @@ public class ListItemDetail extends MainActivity {
         setContentView(R.layout.activity_listitem);
 
         Intent intent = getIntent();
-        FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
+        FrameLayout central = findViewById(R.id.aqiLayout);
         central.setVisibility(View.INVISIBLE);
+        ImageView CityImage = findViewById(R.id.imageView2);
         progressBar = findViewById(R.id.progressbar);
         int position = intent.getIntExtra("position", getResources().getStringArray(R.array.sections).length-1);
         if (position != getResources().getStringArray(R.array.sections).length-1) {
             String[] myKeys = getResources().getStringArray(R.array.sections);
             new JsonTask().execute("https://api.waqi.info/feed/" + myKeys[position] + "/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa&keyword=");
             TypedArray imgs = getResources().obtainTypedArray(R.array.cityimages);
-            ImageView CityImage = (ImageView) findViewById(R.id.imageView2);
             CityImage.setBackgroundResource(imgs.getResourceId(position, 0));
             imgs.recycle();
         } else {
             ActivityResultLauncher<String[]> locationPermissionRequest =
                     registerForActivityResult(new ActivityResultContracts
                             .RequestMultiplePermissions(), result -> {
-                        Boolean fineLocationGranted = result.getOrDefault(
+                                Boolean fineLocationGranted = result.getOrDefault(
                                 Manifest.permission.ACCESS_FINE_LOCATION, false);
-                        Boolean coarseLocationGranted = result.getOrDefault(
+                                Boolean coarseLocationGranted = result.getOrDefault(
                                 Manifest.permission.ACCESS_COARSE_LOCATION, false);
-                        if (fineLocationGranted != null && fineLocationGranted) {
-                            setTitle("Location finder");
-                            mContext = this;
-                            locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-                            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                finish();
-                            }
-                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                                    2000,
-                                    10, locationListenerGPS);
+                                if (fineLocationGranted != null && fineLocationGranted) {
+                                    setTitle("Location finder");
+                                    mContext = this;
+                                    locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                        finish();
+                                    }
+                                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                                            2000,
+                                            10, locationListenerGPS);
+                                        CityImage.setBackgroundResource(R.drawable.bosnia);
 
                                 } else if (coarseLocationGranted != null && coarseLocationGranted) {
                                     setTitle("Location finder");
                                     mContext=this;
                                     locationManager=(LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+
                                     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                         finish();
                                     }
+
                                     locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
                                             2000,
                                             10, locationListenerGPS);
-                                } else {
 
+                                    CityImage.setBackgroundResource(R.drawable.bosnia);
+                                } else {
+                                    finish();
                                 }
                             }
                     );
@@ -180,14 +185,14 @@ public class ListItemDetail extends MainActivity {
                 aqi = getSth.getInt("aqi");
                 JSONObject cityData = getSth.getJSONObject("city");
                 String city = cityData.getString("name");
-                FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
+                FrameLayout central = findViewById(R.id.aqiLayout);
                 central.setVisibility(View.VISIBLE);
-                TextView cityName = (TextView)findViewById(R.id.textView2);
+                TextView cityName = findViewById(R.id.textView2);
                 cityName.setText(city);
-                TextView aqivalue = (TextView)findViewById(R.id.text_view_id);
+                TextView aqivalue = findViewById(R.id.text_view_id);
                 aqivalue.setText(aqi.toString());
                 aqivalue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
-                AQIView myView = (AQIView) findViewById(R.id.aqiDraw);
+                AQIView myView = findViewById(R.id.aqiDraw);
                 myView.setAqi(aqi);
             }catch (JSONException err){
                 Log.d("Error", err.toString());

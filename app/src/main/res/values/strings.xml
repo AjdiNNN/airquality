@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">0</string>
+    <string name="app_name">Air quality</string>
     <string name="title_activity_list_item_detail">ListItemDetail</string>
     <!-- Strings used for fragments for navigation -->
     <string name="airQualityIndex">Air Quality Index</string>
