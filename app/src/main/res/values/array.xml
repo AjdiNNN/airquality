@@ -3,6 +3,10 @@
         <item >Sarajevo</item>
         <item >Zenica</item>
         <!--<item >Visoko</item>-->
+
+        <!-- This one always last -->
+        <item >Use location</item>
+        <!-- This one always last -->
     </string-array>
     <integer-array name="cityimages">
         <item>@drawable/sarajevo</item>

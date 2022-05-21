@@ -1,13 +1,16 @@
 package com.example.airquality;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 
-import android.util.DisplayMetrics;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -16,8 +19,13 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +36,6 @@ import java.net.URL;
 public class ListItemDetail extends MainActivity {
     Integer aqi;
     ProgressBar progressBar;
-    private String[] myKeys;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,21 +44,79 @@ public class ListItemDetail extends MainActivity {
         setContentView(R.layout.activity_listitem);
 
         Intent intent = getIntent();
-        int position = intent.getIntExtra("position", 0);
-
-        // Here we turn your string.xml in an array
-        String[] myKeys = getResources().getStringArray(R.array.sections);
         FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
         central.setVisibility(View.INVISIBLE);
         progressBar = findViewById(R.id.progressbar);
-        new JsonTask().execute("https://api.waqi.info/feed/"+myKeys[position]+"/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa&keyword=");
-        TextView cityName = (TextView)findViewById(R.id.textView2);
-        cityName.setText(myKeys[position]);
-        TypedArray imgs = getResources().obtainTypedArray(R.array.cityimages);
-        ImageView CityImage = (ImageView)findViewById(R.id.imageView2);
-        CityImage.setBackgroundResource(imgs.getResourceId(position, 0));
-        imgs.recycle();
+        int position = intent.getIntExtra("position", getResources().getStringArray(R.array.sections).length-1);
+        if (position != getResources().getStringArray(R.array.sections).length-1) {
+            String[] myKeys = getResources().getStringArray(R.array.sections);
+            new JsonTask().execute("https://api.waqi.info/feed/" + myKeys[position] + "/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa&keyword=");
+            TypedArray imgs = getResources().obtainTypedArray(R.array.cityimages);
+            ImageView CityImage = (ImageView) findViewById(R.id.imageView2);
+            CityImage.setBackgroundResource(imgs.getResourceId(position, 0));
+            imgs.recycle();
+        } else {
+            ActivityResultLauncher<String[]> locationPermissionRequest =
+                    registerForActivityResult(new ActivityResultContracts
+                            .RequestMultiplePermissions(), result -> {
+                        Boolean fineLocationGranted = result.getOrDefault(
+                                Manifest.permission.ACCESS_FINE_LOCATION, false);
+                        Boolean coarseLocationGranted = result.getOrDefault(
+                                Manifest.permission.ACCESS_COARSE_LOCATION, false);
+                        if (fineLocationGranted != null && fineLocationGranted) {
+                            setTitle("Location finder");
+                            mContext = this;
+                            locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                finish();
+                            }
+                            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                                    2000,
+                                    10, locationListenerGPS);
+
+                                } else if (coarseLocationGranted != null && coarseLocationGranted) {
+                                    setTitle("Location finder");
+                                    mContext=this;
+                                    locationManager=(LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                        finish();
+                                    }
+                                    locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
+                                            2000,
+                                            10, locationListenerGPS);
+                                } else {
+
+                                }
+                            }
+                    );
+
+            locationPermissionRequest.launch(new String[] {
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            });
+        }
+
+        // Here we turn your string.xml in an array
+
     }
+    LocationListener locationListenerGPS=new LocationListener() {
+        @Override
+        public void onLocationChanged(android.location.Location location) {
+            double latitude=location.getLatitude();
+            double longitude=location.getLongitude();
+            new JsonTask().execute("https://api.waqi.info/feed/geo:"+latitude+";"+longitude+"/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa");
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            finish();
+        }
+    };
 
     private class JsonTask extends AsyncTask<String, String, String> {
 
@@ -109,16 +174,16 @@ public class ListItemDetail extends MainActivity {
             super.onPostExecute(result);
             progressBar.setVisibility(View.GONE);
             try {
-                /*result = result.replace("[{","{");
-                result = result.replace("]}","}");
-                Log.d("test",result);*/
+
                 JSONObject jsonObject = new JSONObject(result);
                 JSONObject getSth = jsonObject.getJSONObject("data");
                 aqi = getSth.getInt("aqi");
-                // globally
+                JSONObject cityData = getSth.getJSONObject("city");
+                String city = cityData.getString("name");
                 FrameLayout central = (FrameLayout)findViewById(R.id.aqiLayout);
                 central.setVisibility(View.VISIBLE);
-
+                TextView cityName = (TextView)findViewById(R.id.textView2);
+                cityName.setText(city);
                 TextView aqivalue = (TextView)findViewById(R.id.text_view_id);
                 aqivalue.setText(aqi.toString());
                 aqivalue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
