@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/aqiText"
+    android:id="@+id/mainLayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
@@ -43,7 +43,7 @@
             android:layout_height="fill_parent"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
-            android:text="@string/app_name"
+            android:text="@string/airQualityValue"
             android:textColor="#757575"
             android:textSize="50sp"
             android:visibility="visible"
@@ -72,5 +72,17 @@
             tools:ignore="TextContrastCheck" />
 
     </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/city">
+
+        <LinearLayout
+            android:id="@+id/scrollLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
 </LinearLayout>

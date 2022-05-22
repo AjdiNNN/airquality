@@ -11,9 +11,17 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.SubscriptSpan;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -181,21 +189,68 @@ public class ListItemDetail extends MainActivity {
             try {
 
                 JSONObject jsonObject = new JSONObject(result);
-                JSONObject getSth = jsonObject.getJSONObject("data");
-                aqi = getSth.getInt("aqi");
-                JSONObject cityData = getSth.getJSONObject("city");
+                JSONObject data = jsonObject.getJSONObject("data");
+
+                aqi = data.getInt("aqi");
+                JSONObject cityData = data.getJSONObject("city");
+
                 String city = cityData.getString("name");
+
                 FrameLayout central = findViewById(R.id.aqiLayout);
                 central.setVisibility(View.VISIBLE);
+
                 TextView cityName = findViewById(R.id.textView2);
                 cityName.setText(city);
+
                 TextView aqivalue = findViewById(R.id.text_view_id);
                 aqivalue.setText(aqi.toString());
+
                 aqivalue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
                 AQIView myView = findViewById(R.id.aqiDraw);
                 myView.setAqi(aqi);
+
+                JSONObject iaqi = data.getJSONObject("iaqi");
+                iaqi.keys().forEachRemaining((property) -> {
+                    try {
+                        TextView text = new TextView(ListItemDetail.this);
+                        int propertyValue = iaqi.getJSONObject(property).getInt("v");
+                        String numberString = property.replaceAll("[^0-9]", "");
+                        SpannableString styledString =  new SpannableString(property.replaceAll("\\d", "").toUpperCase());
+                        SpannableString styledNumber = new SpannableString("");
+                        SpannableStringBuilder finalString = new SpannableStringBuilder();
+                        if(!numberString.isEmpty())
+                        {
+                            styledNumber = new SpannableString(numberString);
+                            styledNumber.setSpan(new SubscriptSpan(),0,numberString.length(),0);
+                        }
+                        String value =  " "+Integer.toString(propertyValue);
+                        SpannableString valueSpan = new SpannableString(value);
+                        valueSpan.setSpan(
+                                new ForegroundColorSpan(Color.HSVToColor(new float[]{ ((1f-((float)propertyValue/255f))*120f), 1f, 1f })),
+                                0, // start
+                                value.length(), // end
+                                Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+                        );
+                        finalString.append(styledString).append(styledNumber).append(valueSpan);
+                        text.setText(finalString);
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,155);
+                        params.setMargins(0,10,0,10);
+                        text.setLayoutParams(params);
+                        text.setTextSize(28);
+                        text.setGravity(Gravity.CENTER);
+                        text.setPadding(5,5,5,5);
+                        text.setTextColor(Color.GREEN);
+                        text.setBackgroundColor(Color.LTGRAY);
+                        LinearLayout m_layout = findViewById(R.id.scrollLayout);
+                        m_layout.addView(text);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                });
             }catch (JSONException err){
                 Log.d("Error", err.toString());
+
             }
         }
     }

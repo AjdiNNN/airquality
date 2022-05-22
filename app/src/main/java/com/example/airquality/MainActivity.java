@@ -36,8 +36,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         ListView listview = (ListView) findViewById(R.id.listView1);
         listview.setOnItemClickListener(this);
 
-
-
     }
 
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {

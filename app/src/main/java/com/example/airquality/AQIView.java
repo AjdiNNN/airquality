@@ -61,7 +61,7 @@ public class AQIView extends View
     public void invalidate() {
         super.invalidate();
         fill.setColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
-        arc_sweep = aqi > 300 ? 300 : aqi;
+        arc_sweep = Math.min(aqi, 300);
     }
     @Override
     protected void onDraw(Canvas canvas) {
