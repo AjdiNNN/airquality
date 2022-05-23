@@ -99,4 +99,5 @@ public class AQIView extends View
         this.aqi = 70;
         invalidate();
     }
+
 }

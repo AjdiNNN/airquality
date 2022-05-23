@@ -23,6 +23,16 @@
         android:layout_height="200dp"
         android:background="#FFFFFF">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="fill_parent"
@@ -78,11 +88,11 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/city">
 
-        <LinearLayout
-            android:id="@+id/scrollLayout"
+        <TableLayout
+            android:id="@+id/table"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" />
+            android:stretchColumns="*"/>
     </ScrollView>
 
 </LinearLayout>

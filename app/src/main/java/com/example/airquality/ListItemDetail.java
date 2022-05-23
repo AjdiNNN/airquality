@@ -16,15 +16,19 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.text.style.SubscriptSpan;
 import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -212,38 +216,104 @@ public class ListItemDetail extends MainActivity {
                 JSONObject iaqi = data.getJSONObject("iaqi");
                 iaqi.keys().forEachRemaining((property) -> {
                     try {
-                        TextView text = new TextView(ListItemDetail.this);
-                        int propertyValue = iaqi.getJSONObject(property).getInt("v");
+                        TextView propertyTextView = new TextView(ListItemDetail.this);
+                        TextView propertyValueTextView = new TextView(ListItemDetail.this);
+
+
+                        String addon = "";
+                        float propertyValue = iaqi.getJSONObject(property).getInt("v");
+                        int valueColor = Color.HSVToColor(new float[]{ ((1f-(propertyValue%300f/300f))*120f), 1f, 1f});
+                        if(property.equals("p"))
+                            valueColor = propertyValue<950f || propertyValue>1100f ? Color.RED : Color.GREEN;
+
+                        switch(property) {
+                            case "p":
+                                property = "Pressure";
+                                addon = "mb";
+                                break;
+                            case "t":
+                                property = "Temperature";
+                                addon = "°C";
+                                break;
+                            case "w":
+                                property = "Wind";
+                                addon = "km/h";
+                                break;
+                            case "h":
+                                property = "Humidity";
+                                addon = "%";
+                                break;
+                            case "dew":
+                                property = "Dew P.";
+                                addon = "°C";
+                                break;
+
+                            default:
+                                // code block
+                        }
+
+
                         String numberString = property.replaceAll("[^0-9]", "");
+
                         SpannableString styledString =  new SpannableString(property.replaceAll("\\d", "").toUpperCase());
                         SpannableString styledNumber = new SpannableString("");
                         SpannableStringBuilder finalString = new SpannableStringBuilder();
+
                         if(!numberString.isEmpty())
                         {
                             styledNumber = new SpannableString(numberString);
-                            styledNumber.setSpan(new SubscriptSpan(),0,numberString.length(),0);
+                            styledNumber.setSpan(new RelativeSizeSpan(0.5f),0,numberString.length(),0);
                         }
-                        String value =  " "+Integer.toString(propertyValue);
+
+                        String formated = propertyValue == (int)propertyValue ? Integer.toString((int)propertyValue) : Float.toString(propertyValue);
+                        String value =  " "+formated + addon;
                         SpannableString valueSpan = new SpannableString(value);
+
+
+
                         valueSpan.setSpan(
-                                new ForegroundColorSpan(Color.HSVToColor(new float[]{ ((1f-((float)propertyValue/255f))*120f), 1f, 1f })),
+                                new ForegroundColorSpan(valueColor),
                                 0, // start
                                 value.length(), // end
                                 Spannable.SPAN_EXCLUSIVE_INCLUSIVE
                         );
-                        finalString.append(styledString).append(styledNumber).append(valueSpan);
-                        text.setText(finalString);
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,155);
-                        params.setMargins(0,10,0,10);
-                        text.setLayoutParams(params);
-                        text.setTextSize(28);
-                        text.setGravity(Gravity.CENTER);
-                        text.setPadding(5,5,5,5);
-                        text.setTextColor(Color.GREEN);
-                        text.setBackgroundColor(Color.LTGRAY);
-                        LinearLayout m_layout = findViewById(R.id.scrollLayout);
-                        m_layout.addView(text);
 
+                        finalString.append(styledString).append(styledNumber);
+                        propertyTextView.setText(finalString);
+                        propertyValueTextView.setText(valueSpan);
+
+                        propertyTextView.setTextSize(32);
+                        propertyValueTextView.setTextSize(32);
+
+                        propertyTextView.setGravity(Gravity.CENTER);
+                        propertyValueTextView.setGravity(Gravity.CENTER);
+
+                        propertyTextView.setTextColor(Color.DKGRAY);
+
+                        propertyTextView.setBackgroundColor(Color.LTGRAY);
+                        propertyValueTextView.setBackgroundColor(Color.GRAY);
+
+                        TableLayout m_layout = findViewById(R.id.table);
+                        TableRow row = new TableRow(ListItemDetail.this);
+                        TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+                        row.setLayoutParams(lp);
+
+                        TableLayout.LayoutParams tableRowParams=
+                                new TableLayout.LayoutParams
+                                        (TableLayout.LayoutParams.FILL_PARENT,TableLayout.LayoutParams.WRAP_CONTENT);
+
+                        int leftMargin=10;
+                        int topMargin=3;
+                        int rightMargin=10;
+                        int bottomMargin=3;
+
+                        tableRowParams.setMargins(leftMargin, topMargin, rightMargin, bottomMargin);
+
+                        row.setLayoutParams(tableRowParams);
+
+                        row.addView(propertyTextView);
+                        row.addView(propertyValueTextView);
+                        m_layout.addView(row);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
