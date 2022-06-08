@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     LocationManager locationManager;
     Context mContext;
-    @SuppressLint("MissingPermission")
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
