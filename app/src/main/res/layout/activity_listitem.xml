@@ -74,7 +74,7 @@
             tools:ignore="TextContrastCheck" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/dateTime"
             android:layout_width="81dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="15dp"

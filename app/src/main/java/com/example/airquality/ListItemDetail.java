@@ -210,6 +210,7 @@ public class ListItemDetail extends MainActivity {
             progressBar.setVisibility(View.GONE);
             String city = "";
             JSONObject iaqi = new JSONObject();
+            String dateTime = "";
             /**
              * If there is internet connection get data
              */
@@ -277,13 +278,17 @@ public class ListItemDetail extends MainActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
+                try {
+                    dateTime = data.getJSONObject("time").getString("s");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 /**
                  * Save current data into room database
                  */
                 AirQuality todo = null;
                 try {
-                    todo = new AirQuality(aqi,city,cityPostion.getDouble(0),cityPostion.getDouble(1), iaqi.toString(), "");
+                    todo = new AirQuality(aqi,city,cityPostion.getDouble(0),cityPostion.getDouble(1), iaqi.toString(), dateTime);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -307,6 +312,7 @@ public class ListItemDetail extends MainActivity {
                      */
                     aqi = airQuality.getAQIndex();
                     city = airQuality.getCityName();
+                    dateTime = airQuality.getDateTaken();
                     try {
                         iaqi = new JSONObject(airQuality.getIaqi());
                     } catch (JSONException e) {
@@ -317,6 +323,7 @@ public class ListItemDetail extends MainActivity {
             /***
              * Set all values on UI
              */
+
             FrameLayout central = findViewById(R.id.aqiLayout);
             central.setVisibility(View.VISIBLE);
 
@@ -327,6 +334,9 @@ public class ListItemDetail extends MainActivity {
 
             TextView aqiValue = findViewById(R.id.aqiValue);
             aqiValue.setText(aqi.toString());
+
+            TextView dateTimeText = findViewById(R.id.dateTime);
+            dateTimeText.setText(dateTime);
 
             aqiValue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
             AQIView myView = findViewById(R.id.aqiDraw);
