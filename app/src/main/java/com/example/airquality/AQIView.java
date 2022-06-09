@@ -96,7 +96,7 @@ public class AQIView extends View
         init(attrs, defStyle);
     }
     public void setAqi(int aqi) {
-        this.aqi = 70;
+        this.aqi = aqi;
         invalidate();
     }
 

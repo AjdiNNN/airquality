@@ -28,8 +28,6 @@ import android.util.Log;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -47,7 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ListItemDetail extends MainActivity {
-    Integer aqi;
+    Integer aqi = 0;
     ProgressBar progressBar;
     AirQuality airQuality = null;
     @Override
@@ -210,8 +208,8 @@ public class ListItemDetail extends MainActivity {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             progressBar.setVisibility(View.GONE);
-            String city = null;
-            JSONObject iaqi = null;
+            String city = "";
+            JSONObject iaqi = new JSONObject();
             /**
              * If there is internet connection get data
              */
@@ -223,69 +221,73 @@ public class ListItemDetail extends MainActivity {
                 JSONObject jsonObject = null;
                 try {
                     jsonObject = new JSONObject(result);
-                    /**
-                     * Get station data
-                     */
-                    JSONObject data = null;
-                    try {
-                        data = jsonObject.getJSONObject("data");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    /**
-                     * Get air quality index data
-                     */
-                    try {
-                        aqi = data.getInt("aqi");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    /**
-                     * Get city/station information
-                     */
-                    JSONObject cityData = null;
-                    try {
-                        cityData = data.getJSONObject("city");
-                        try {
-                            city = cityData.getString("name");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    /**
-                     * Get station gps location
-                     */
-                    JSONArray cityPostion = null;
-                    try {
-                        cityPostion = cityData.getJSONArray("geo");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    /**
-                     * Get station measuring
-                     */
-                    try {
-                        iaqi = data.getJSONObject("iaqi");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    /**
-                     * Save current data into room database
-                     */
-                    AirQuality todo = null;
-                    try {
-                        todo = new AirQuality(aqi,city,cityPostion.getDouble(0),cityPostion.getDouble(1), iaqi.toString(), "");
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    AppDatabase.getInsance(ListItemDetail.this).airqualityDao().add(todo);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                /**
+                 * Get station data
+                 */
+                JSONObject data = null;
+                try {
+                    data = jsonObject.getJSONObject("data");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                /**
+                 * Get air quality index data
+                 */
+                try {
+                    aqi = data.getInt("aqi");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                /**
+                 * Get city/station information
+                 */
+                JSONObject cityData = null;
+                try {
+                    cityData = data.getJSONObject("city");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                /**
+                 * Get  city/station name
+                 */
+                try {
+                    city = cityData.getString("name");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                /**
+                 * Get station gps location
+                 */
+                JSONArray cityPostion = null;
+                try {
+                    cityPostion = cityData.getJSONArray("geo");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                /**
+                 * Get station measuring
+                 */
+                try {
+                    iaqi = data.getJSONObject("iaqi");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                /**
+                 * Save current data into room database
+                 */
+                AirQuality todo = null;
+                try {
+                    todo = new AirQuality(aqi,city,cityPostion.getDouble(0),cityPostion.getDouble(1), iaqi.toString(), "");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                AppDatabase.getInsance(ListItemDetail.this).airqualityDao().add(todo);
 
             }
             /**
@@ -296,10 +298,10 @@ public class ListItemDetail extends MainActivity {
 
                 if(airQuality==null)
                 {
-                    Toast.makeText(ListItemDetail.this, "No internet connection", Toast.LENGTH_LONG);
+                    city = "No internet";
                 }
-                    else
-                    {
+                else
+                {
                     /**
                      * Get data from room and put them into variables
                      */
@@ -312,18 +314,18 @@ public class ListItemDetail extends MainActivity {
                     }
                 }
             }
-
             /***
              * Set all values on UI
              */
             FrameLayout central = findViewById(R.id.aqiLayout);
             central.setVisibility(View.VISIBLE);
 
-            TextView cityName = findViewById(R.id.textView2);
+            TextView cityName = findViewById(R.id.cityName);
 
             cityName.setText(city);
 
-            TextView aqiValue = findViewById(R.id.text_view_id);
+
+            TextView aqiValue = findViewById(R.id.aqiValue);
             aqiValue.setText(aqi.toString());
 
             aqiValue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));

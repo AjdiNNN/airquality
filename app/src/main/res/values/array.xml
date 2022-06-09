@@ -1,7 +1,7 @@
 <resources>
     <string-array name="sections">
-        <item >Sarajevo Otoka</item>
-        <item >Zenica Centar</item>
+        <item >Sarajevo</item>
+        <item >Zenica</item>
         <!--<item >Visoko</item>-->
 
         <!-- This one always last -->
