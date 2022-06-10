@@ -75,10 +75,9 @@ public class ListItemDetail extends MainActivity {
                                 Manifest.permission.ACCESS_FINE_LOCATION, false);
                                 Boolean coarseLocationGranted = result.getOrDefault(
                                 Manifest.permission.ACCESS_COARSE_LOCATION, false);
-                                if (fineLocationGranted != null && fineLocationGranted) {
+                                if (coarseLocationGranted != null && coarseLocationGranted || fineLocationGranted != null && fineLocationGranted ) {
                                     setTitle("Location finder");
-                                    mContext = this;
-                                    locationManager = (LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
+                                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                                     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                         finish();
                                     }
@@ -87,20 +86,6 @@ public class ListItemDetail extends MainActivity {
                                             10, locationListenerGPS);
                                         CityImage.setBackgroundResource(R.drawable.bosnia);
 
-                                } else if (coarseLocationGranted != null && coarseLocationGranted) {
-                                    setTitle("Location finder");
-                                    mContext=this;
-                                    locationManager=(LocationManager) mContext.getSystemService(Context.LOCATION_SERVICE);
-
-                                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                        finish();
-                                    }
-
-                                    locationManager.requestLocationUpdates( LocationManager.GPS_PROVIDER,
-                                            2000,
-                                            10, locationListenerGPS);
-
-                                    CityImage.setBackgroundResource(R.drawable.bosnia);
                                 } else {
                                     finish();
                                 }
@@ -112,9 +97,6 @@ public class ListItemDetail extends MainActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION
             });
         }
-
-        // Here we turn your string.xml in an array
-
     }
     LocationListener locationListenerGPS=new LocationListener() {
         @Override
@@ -125,30 +107,10 @@ public class ListItemDetail extends MainActivity {
         }
 
         @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-
-        }
-
-        @Override
         public void onProviderDisabled(String provider) {
             finish();
         }
     };
-
-    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
-        @Override
-        public void onAvailable(@NonNull Network network) {
-            super.onAvailable(network);
-            Log.d("A","a");
-        }
-
-        @Override
-        public void onLost(@NonNull Network network) {
-            super.onLost(network);
-        }
-
-    };
-
 
     private class JsonTask extends AsyncTask<String, String, String> {
 
@@ -198,7 +160,6 @@ public class ListItemDetail extends MainActivity {
                     if (reader != null) reader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.d("A","aa");
                 }
             }
             return null;
@@ -324,24 +285,71 @@ public class ListItemDetail extends MainActivity {
              * Set all values on UI
              */
 
+            /**
+             * Get top most frame layout
+             */
             FrameLayout central = findViewById(R.id.aqiLayout);
             central.setVisibility(View.VISIBLE);
 
+            /**
+             * Set name of station/city on frame layout
+             */
             TextView cityName = findViewById(R.id.cityName);
-
             cityName.setText(city);
 
-
+            /**
+             * Set air quality index value and give it color according to hazard
+             */
             TextView aqiValue = findViewById(R.id.aqiValue);
             aqiValue.setText(aqi.toString());
+            aqiValue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
 
+            /**
+             * Set when time measurements are taken
+             */
             TextView dateTimeText = findViewById(R.id.dateTime);
             dateTimeText.setText(dateTime);
 
-            aqiValue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
+            /**
+             * Set value into drawable custom view
+             */
             AQIView myView = findViewById(R.id.aqiDraw);
+
             myView.setAqi(aqi);
 
+            /* Air quality description */
+            String airQualityInfo = "";
+            if(aqi<50)
+            {
+                airQualityInfo = "Air quality is satisfactory, and air pollution poses little or no risk.";
+            }
+            else if(aqi<100)
+            {
+                airQualityInfo = "Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion.";
+            }
+            else if(aqi<150)
+            {
+                airQualityInfo = "Active children and adults, and people with respiratory disease, such as asthma, should limit prolonged outdoor exertion.";
+            }
+            else if(aqi<200)
+            {
+                airQualityInfo = "Active children and adults, and people with respiratory disease, such as asthma, should avoid prolonged outdoor exertion; everyone else, especially children, should limit prolonged outdoor exertion";
+            }
+            else if(aqi<300)
+            {
+                airQualityInfo = "Active children and adults, and people with respiratory disease, such as asthma, should avoid all outdoor exertion; everyone else, especially children, should limit outdoor exertion.";
+            }
+            else
+            {
+                airQualityInfo = "Everyone should avoid all outdoor exertion";
+            }
+            TextView airQualityInfoText = findViewById(R.id.air_quality_info);
+            airQualityInfoText.setText(airQualityInfo);
+            airQualityInfoText.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
+
+            /**
+             * List all measurements
+             */
             JSONObject finalIaqi = iaqi;
             iaqi.keys().forEachRemaining((property) -> {
                 try {

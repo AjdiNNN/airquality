@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -31,6 +32,7 @@ public class AQIView extends View
     int arc_ofset = 120;
     int centerW;
     int centerH;
+    boolean clearCanvas = false;
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         centerW = w/2;
@@ -66,6 +68,12 @@ public class AQIView extends View
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        if(clearCanvas)
+        {
+            path.reset();
+            clearCanvas = false;
+        }
         transparentFill.setAlpha(75);
         transparentPath.arcTo(outer_rect, arc_ofset, 300);
         transparentPath.arcTo(inner_rect, arc_ofset + 300, -300);
@@ -97,6 +105,7 @@ public class AQIView extends View
     }
     public void setAqi(int aqi) {
         this.aqi = aqi;
+        clearCanvas = true;
         invalidate();
     }
 

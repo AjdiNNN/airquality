@@ -77,10 +77,20 @@
             android:id="@+id/dateTime"
             android:layout_width="81dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
             android:fontFamily="sans-serif-smallcaps"
             android:gravity="center|center_vertical"
             android:text="@string/dummy_date_time"
+            android:textColor="#00FF73" />
+
+        <TextView
+            android:id="@+id/air_quality_info"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="300dp"
+            android:fontFamily="sans-serif-smallcaps"
+            android:gravity="center"
+            android:text="@string/dummy_content"
             android:textColor="#00FF73" />
 
     </FrameLayout>
