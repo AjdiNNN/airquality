@@ -288,7 +288,7 @@ public class ListItemDetail extends MainActivity {
                  */
                 AirQuality todo = null;
                 try {
-                    todo = new AirQuality(aqi,city,cityPostion.getDouble(0),cityPostion.getDouble(1), iaqi.toString(), dateTime);
+                    todo = new AirQuality(aqi,city.split(" ")[0],cityPostion.getDouble(0),cityPostion.getDouble(1), iaqi.toString(), dateTime);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
