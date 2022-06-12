@@ -4,13 +4,6 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
 @Entity(tableName = "air")
 public class AirQuality { //todo_tasks
     @PrimaryKey(autoGenerate = true)

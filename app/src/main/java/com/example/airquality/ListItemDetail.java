@@ -362,6 +362,9 @@ public class ListItemDetail extends MainActivity {
             airQualityInfoText.setText(airQualityInfo);
             airQualityInfoText.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
 
+
+            TableLayout m_layout = findViewById(R.id.table);
+            m_layout.removeAllViews();
             /*
              * List all measurements
              */
@@ -445,7 +448,7 @@ public class ListItemDetail extends MainActivity {
                     propertyTextView.setBackgroundColor(Color.LTGRAY);
                     propertyValueTextView.setBackgroundColor(Color.GRAY);
 
-                    TableLayout m_layout = findViewById(R.id.table);
+
                     TableRow row = new TableRow(ListItemDetail.this);
                     TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
                     row.setLayoutParams(lp);

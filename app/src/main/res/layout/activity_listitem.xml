@@ -91,7 +91,8 @@
             android:fontFamily="sans-serif-smallcaps"
             android:gravity="center"
             android:text="@string/dummy_content"
-            android:textColor="#00FF73" />
+            android:textColor="#00FF73"
+            android:textSize="11sp" />
 
     </FrameLayout>
 

@@ -1,5 +1,5 @@
 package com.example.airquality;
-import android.Manifest;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -8,20 +8,19 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.util.Log;
+
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,8 +30,6 @@ import java.net.URL;
 
 public class ShowNotification extends BroadcastReceiver {
     Context mContext;
-    LocationManager locationManager;
-
     @SuppressLint("MissingPermission")
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -121,6 +118,7 @@ public class ShowNotification extends BroadcastReceiver {
                  */
                 JSONObject data = null;
                 try {
+                    assert jsonObject != null;
                     data = jsonObject.getJSONObject("data");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -129,6 +127,7 @@ public class ShowNotification extends BroadcastReceiver {
                   Get air quality index data
                  */
                 try {
+                    assert data != null;
                     aqi = data.getInt("aqi");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -147,6 +146,7 @@ public class ShowNotification extends BroadcastReceiver {
                   Get  city/station name
                  */
                 try {
+                    assert cityData != null;
                     city = cityData.getString("name");
                 } catch (JSONException e) {
                     e.printStackTrace();
