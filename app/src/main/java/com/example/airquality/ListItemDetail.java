@@ -1,6 +1,8 @@
 package com.example.airquality;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
@@ -10,7 +12,6 @@ import android.graphics.Color;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Spannable;
@@ -45,7 +46,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ListItemDetail extends MainActivity {
-    Integer aqi = 0;
+    int aqi = 0;
     ProgressBar progressBar;
     AirQuality airQuality = null;
     @Override
@@ -63,6 +64,7 @@ public class ListItemDetail extends MainActivity {
             String[] myKeys = getResources().getStringArray(R.array.sections);
             airQuality = AppDatabase.getInsance(ListItemDetail.this).airqualityDao().getByCityName(myKeys[position]);
             new JsonTask().execute("https://api.waqi.info/feed/" + myKeys[position] + "/?token=12c5ab71671b446ec2778d97bc3ead6efd32c0aa&keyword=");
+
             TypedArray imgs = getResources().obtainTypedArray(R.array.cityimages);
             CityImage.setBackgroundResource(imgs.getResourceId(position, 0));
             imgs.recycle();
@@ -97,6 +99,15 @@ public class ListItemDetail extends MainActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION
             });
         }
+
+        Intent notificationIntent = new Intent(getApplicationContext(), ShowNotification.class);
+        PendingIntent contentIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, notificationIntent,
+                PendingIntent.FLAG_CANCEL_CURRENT + PendingIntent.FLAG_MUTABLE);
+
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        am.cancel(contentIntent);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis()
+                + AlarmManager.INTERVAL_HALF_DAY , AlarmManager.INTERVAL_HALF_DAY, contentIntent);
     }
     LocationListener locationListenerGPS=new LocationListener() {
         @Override
@@ -121,7 +132,7 @@ public class ListItemDetail extends MainActivity {
 
         protected String doInBackground(String... params) {
 
-            /**
+            /*
              * Setup HTTP connection to JSON api
              */
             HttpURLConnection connection = null;
@@ -172,12 +183,12 @@ public class ListItemDetail extends MainActivity {
             String city = "";
             JSONObject iaqi = new JSONObject();
             String dateTime = "";
-            /**
+            /*
              * If there is internet connection get data
              */
             if(isConnected(ListItemDetail.this))
             {
-                /**
+                /*
                  * Get base JSON OBJECT
                  */
                 JSONObject jsonObject = null;
@@ -187,24 +198,26 @@ public class ListItemDetail extends MainActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /**
+                /*
                  * Get station data
                  */
                 JSONObject data = null;
                 try {
+                    assert jsonObject != null;
                     data = jsonObject.getJSONObject("data");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /**
+                /*
                  * Get air quality index data
                  */
                 try {
+                    assert data != null;
                     aqi = data.getInt("aqi");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /**
+                /*
                  * Get city/station information
                  */
                 JSONObject cityData = null;
@@ -214,24 +227,25 @@ public class ListItemDetail extends MainActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /**
+                /*
                  * Get  city/station name
                  */
                 try {
+                    assert cityData != null;
                     city = cityData.getString("name");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /**
+                /*
                  * Get station gps location
                  */
-                JSONArray cityPostion = null;
+                JSONArray cityPosition = null;
                 try {
-                    cityPostion = cityData.getJSONArray("geo");
+                    cityPosition = cityData.getJSONArray("geo");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /**
+                /*
                  * Get station measuring
                  */
                 try {
@@ -244,19 +258,20 @@ public class ListItemDetail extends MainActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                /**
+                /*
                  * Save current data into room database
                  */
                 AirQuality todo = null;
                 try {
-                    todo = new AirQuality(aqi,city.split(" ")[0],cityPostion.getDouble(0),cityPostion.getDouble(1), iaqi.toString(), dateTime);
+                    assert cityPosition != null;
+                    todo = new AirQuality(aqi,city.split(" ")[0],cityPosition.getDouble(0),cityPosition.getDouble(1), iaqi.toString(), dateTime);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 AppDatabase.getInsance(ListItemDetail.this).airqualityDao().add(todo);
 
             }
-            /**
+            /*
              * If there is not internet connection get data from room
              */
             else
@@ -268,7 +283,7 @@ public class ListItemDetail extends MainActivity {
                 }
                 else
                 {
-                    /**
+                    /*
                      * Get data from room and put them into variables
                      */
                     aqi = airQuality.getAQIndex();
@@ -281,36 +296,36 @@ public class ListItemDetail extends MainActivity {
                     }
                 }
             }
-            /***
+            /*
              * Set all values on UI
              */
 
-            /**
+            /*
              * Get top most frame layout
              */
             FrameLayout central = findViewById(R.id.aqiLayout);
             central.setVisibility(View.VISIBLE);
 
-            /**
+            /*
              * Set name of station/city on frame layout
              */
             TextView cityName = findViewById(R.id.cityName);
             cityName.setText(city);
 
-            /**
+            /*
              * Set air quality index value and give it color according to hazard
              */
             TextView aqiValue = findViewById(R.id.aqiValue);
-            aqiValue.setText(aqi.toString());
+            aqiValue.setText(Integer.toString(aqi));
             aqiValue.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
 
-            /**
+            /*
              * Set when time measurements are taken
              */
             TextView dateTimeText = findViewById(R.id.dateTime);
             dateTimeText.setText(dateTime);
 
-            /**
+            /*
              * Set value into drawable custom view
              */
             AQIView myView = findViewById(R.id.aqiDraw);
@@ -318,7 +333,7 @@ public class ListItemDetail extends MainActivity {
             myView.setAqi(aqi);
 
             /* Air quality description */
-            String airQualityInfo = "";
+            String airQualityInfo;
             if(aqi<50)
             {
                 airQualityInfo = "Air quality is satisfactory, and air pollution poses little or no risk.";
@@ -347,7 +362,7 @@ public class ListItemDetail extends MainActivity {
             airQualityInfoText.setText(airQualityInfo);
             airQualityInfoText.setTextColor(Color.HSVToColor(new float[]{ ((1f-((float)aqi/255f))*120f), 1f, 1f }));
 
-            /**
+            /*
              * List all measurements
              */
             JSONObject finalIaqi = iaqi;
@@ -402,8 +417,8 @@ public class ListItemDetail extends MainActivity {
                         styledNumber.setSpan(new RelativeSizeSpan(0.5f),0,numberString.length(),0);
                     }
 
-                    String formated = propertyValue == (int)propertyValue ? Integer.toString((int)propertyValue) : Float.toString(propertyValue);
-                    String value =  " "+formated + addon;
+                    String formatted = propertyValue == (int)propertyValue ? Integer.toString((int)propertyValue) : Float.toString(propertyValue);
+                    String value =  " "+formatted + addon;
                     SpannableString valueSpan = new SpannableString(value);
 
 

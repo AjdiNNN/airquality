@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -23,7 +25,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
     LocationManager locationManager;
-    Context mContext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,11 +32,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        setTitle("Chose City");
-        //* *EDIT* *
-        ListView listview = (ListView) findViewById(R.id.listView1);
-        listview.setOnItemClickListener(this);
 
+        setTitle("Chose City");
+
+        ListView listview = findViewById(R.id.listView1);
+        listview.setOnItemClickListener(this);
     }
 
     public void onItemClick(AdapterView<?> l, View v, int position, long id) {
