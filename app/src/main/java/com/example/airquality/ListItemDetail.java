@@ -72,11 +72,11 @@ public class ListItemDetail extends MainActivity {
             airQuality = AppDatabase.getInsance(ListItemDetail.this).airqualityDao().getLastEntry();
             ActivityResultLauncher<String[]> locationPermissionRequest =
                     registerForActivityResult(new ActivityResultContracts
-                            .RequestMultiplePermissions(), result -> {
+                                    .RequestMultiplePermissions(), result -> {
                                 Boolean fineLocationGranted = result.getOrDefault(
-                                Manifest.permission.ACCESS_FINE_LOCATION, false);
+                                        Manifest.permission.ACCESS_FINE_LOCATION, false);
                                 Boolean coarseLocationGranted = result.getOrDefault(
-                                Manifest.permission.ACCESS_COARSE_LOCATION, false);
+                                        Manifest.permission.ACCESS_COARSE_LOCATION, false);
                                 if (coarseLocationGranted != null && coarseLocationGranted || fineLocationGranted != null && fineLocationGranted ) {
                                     setTitle("Location finder");
                                     locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -86,7 +86,7 @@ public class ListItemDetail extends MainActivity {
                                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                                             2000,
                                             10, locationListenerGPS);
-                                        CityImage.setBackgroundResource(R.drawable.bosnia);
+                                    CityImage.setBackgroundResource(R.drawable.bosnia);
 
                                 } else {
                                     finish();
